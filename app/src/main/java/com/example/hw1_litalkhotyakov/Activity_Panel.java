@@ -10,21 +10,22 @@ import android.os.Vibrator;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-
 import java.util.Random;
 
 public class Activity_Panel extends AppCompatActivity {
 
-    private ImageView panel_IMG_plane;
+    private ImageView[] panel_IMG_planes;
     private ImageView panel_IMG_background;
     private ImageView[] panel_IMG_hearts;
     private ImageView[] panel_IMG_button;
+    private ImageView panel_IMG_left_direction;
+    private ImageView panel_IMG_right_direction;
     private ImageView[][] path;
     private int[][] values;
-//    private LinearLayout[] arrA;
-//    private LinearLayout[] arrB;
-//    private LinearLayout[] arrC;
+    private int planeLoc = 1;
+    private final int MAX_LIVES = 3;
+    private int lives = MAX_LIVES;;
+
 //    android:background="@drawable/img_background"
 
 
@@ -34,7 +35,7 @@ public class Activity_Panel extends AppCompatActivity {
         setContentView(R.layout.activity_panel);
         findViews();
 
-//        Glide
+//        Glide                  \\\\הוא אמר לעשות ככה אבל לא מראה לי תמונה מלאה\\\\
 //                .with(this)
 //                .load(R.drawable.img_background)
 //                .fitCenter()
@@ -46,26 +47,61 @@ public class Activity_Panel extends AppCompatActivity {
 //        android:layout_height="match_parent"
 //                />
 
+        initValMatrix();
+        checkCrashing();
+        randomly();
+        updateUI();
+        clickDirection();
+
+
+    }
+
+    private void clickDirection() {
+        panel_IMG_left_direction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                panel_IMG_planes[planeLoc].setVisibility(View.INVISIBLE);
+                planeLoc--;
+                if (planeLoc < 0) {
+                    planeLoc = 0;
+                }
+                panel_IMG_planes[planeLoc].setVisibility(View.VISIBLE);
+
+
+            }
+        });
+
+        panel_IMG_right_direction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                panel_IMG_planes[planeLoc].setVisibility(View.INVISIBLE);
+                planeLoc++;
+                if (planeLoc > 2) {
+                    planeLoc = 2;
+                }
+                panel_IMG_planes[planeLoc].setVisibility(View.VISIBLE);
+
+
+            }
+        });
+    }
+
+    private void initValMatrix() {
         for (int i = 0; i < values.length; i++) {
             for (int j = 0; j < values[i].length; j++) {
                 values[i][j] = 0;
             }
         }
-
-        checkCrashing();
-        randomly();
-        updateUI();
-        vibrate();
-
     }
 
-
     private void findViews() {
-        panel_IMG_plane = findViewById(R.id.panel_IMG_plane);
-        panel_IMG_button = new ImageView[]{
-                findViewById(R.id.panel_IMG_left_direction),
-                findViewById(R.id.panel_IMG_right_direction)
+        panel_IMG_planes = new ImageView[]{
+                findViewById(R.id.panel_IMG_plane0),
+                findViewById(R.id.panel_IMG_plane1),
+                findViewById(R.id.panel_IMG_plane2)
         };
+        panel_IMG_left_direction = findViewById(R.id.panel_IMG_left_direction);
+        panel_IMG_right_direction = findViewById(R.id.panel_IMG_right_direction);
         panel_IMG_hearts = new ImageView[]{
                 findViewById(R.id.panel_IMG_heart1),
                 findViewById(R.id.panel_IMG_heart2),
@@ -79,41 +115,24 @@ public class Activity_Panel extends AppCompatActivity {
         values = new int[path.length][path[0].length];
 //        panel_IMG_background = findViewById(R.id.panel_IMG_background);
 
-
-//        arrA = new LinearLayout[]{
-//                findViewById(R.id.panel_LINL_lineA),
-//                findViewById(R.id.panel_LINL_A0),
-//                findViewById(R.id.panel_LINL_A1),
-//                findViewById(R.id.panel_LINL_A2),
-//                findViewById(R.id.panel_LINL_A3),
-//                findViewById(R.id.panel_LINL_A4)
-//        };
-//        arrB = new LinearLayout[]{
-//                findViewById(R.id.panel_LINL_lineB),
-//                findViewById(R.id.panel_LINL_B0),
-//                findViewById(R.id.panel_LINL_B1),
-//                findViewById(R.id.panel_LINL_B2),
-//                findViewById(R.id.panel_LINL_B3),
-//                findViewById(R.id.panel_LINL_B4)
-//        };
-//        arrC = new LinearLayout[]{
-//                findViewById(R.id.panel_LINL_lineC),
-//                findViewById(R.id.panel_LINL_C0),
-//                findViewById(R.id.panel_LINL_C1),
-//                findViewById(R.id.panel_LINL_C2),
-//                findViewById(R.id.panel_LINL_C3),
-//                findViewById(R.id.panel_LINL_C4)
-//        };
     }
 
     private void randomly() {
         final int random = new Random().nextInt(3);
+        values[random][0] = 1;
 
 
     }
 
     private void checkCrashing() {
-
+        if (values[planeLoc][4] == 1) {
+            vibrate();
+            lives--;
+            updateLivesViews();
+        }
+        if (lives == 0) {
+            finish();
+        }
     }
 
 
@@ -125,11 +144,19 @@ public class Activity_Panel extends AppCompatActivity {
                     im.setVisibility(View.INVISIBLE);
                 } else if (values[i][j] == 1) {
                     im.setVisibility(View.VISIBLE);
-                    im.setImageResource(R.drawable.img_bomb);
                 } else if (values[i][j] == 2) {
                     im.setVisibility(View.VISIBLE);
-                    im.setImageResource(R.drawable.img_bomb);
                 }
+            }
+        }
+    }
+
+    private void updateLivesViews() {
+        for (int i = panel_IMG_hearts.length-1; i >= 0; i--) {
+            if ((i+1) >= lives) {
+                panel_IMG_hearts[i].setVisibility(View.VISIBLE);
+            } else {
+                panel_IMG_hearts[i].setVisibility(View.INVISIBLE);
             }
         }
     }

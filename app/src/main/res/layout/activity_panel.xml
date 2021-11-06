@@ -116,8 +116,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp"
                     android:src="@drawable/img_plane"
-                    android:visibility="invisible"
-                    />
+                    android:visibility="invisible" />
 
                 <ImageView
                     android:id="@+id/panel_IMG_bombA4"
@@ -241,10 +240,7 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp"
-                    android:src="@drawable/img_bomb"
-                    />
-
-
+                    android:src="@drawable/img_bomb" />
 
 
             </LinearLayout>
@@ -350,8 +346,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp"
                     android:src="@drawable/img_plane"
-                    android:visibility="invisible"
-                    />
+                    android:visibility="invisible" />
 
                 <ImageView
                     android:id="@+id/panel_IMG_bombC4"

@@ -17,14 +17,14 @@ public class Activity_Panel extends AppCompatActivity {
     private ImageView[] panel_IMG_planes;
     private ImageView panel_IMG_background;
     private ImageView[] panel_IMG_hearts;
-    private ImageView[] panel_IMG_button;
     private ImageView panel_IMG_left_direction;
     private ImageView panel_IMG_right_direction;
     private ImageView[][] path;
     private int[][] values;
     private int planeLoc = 1;
     private final int MAX_LIVES = 3;
-    private int lives = MAX_LIVES;;
+    private int lives = MAX_LIVES;
+    ;
 
 //    android:background="@drawable/img_background"
 
@@ -50,11 +50,28 @@ public class Activity_Panel extends AppCompatActivity {
         initValMatrix();
         checkCrashing();
         randomly();
-        updateUI();
         clickDirection();
+        updateUI();
 
 
     }
+
+    private void MoveBombsAtTouchButton() {
+        for (int i = 0; i < values.length; i++) {
+            for (int j = 0; j < values[i].length; j++) {
+                if (values[i][j] == 1) {
+                    values[i][j] = 0;
+                    if (j == (values[i].length - 1)) {
+                        values[i][j] = 0;
+                    } else {
+                        j++;
+                        values[i][j] = 1;
+                    }
+                }
+            }
+        }
+    }
+
 
     private void clickDirection() {
         panel_IMG_left_direction.setOnClickListener(new View.OnClickListener() {
@@ -80,10 +97,16 @@ public class Activity_Panel extends AppCompatActivity {
                     planeLoc = 2;
                 }
                 panel_IMG_planes[planeLoc].setVisibility(View.VISIBLE);
-
+                MoveBombsAtTouchButton();
+                updateUI();
+                randomly();
+                updateLivesViews();
+                checkCrashing();
 
             }
         });
+
+
     }
 
     private void initValMatrix() {
@@ -152,8 +175,8 @@ public class Activity_Panel extends AppCompatActivity {
     }
 
     private void updateLivesViews() {
-        for (int i = panel_IMG_hearts.length-1; i >= 0; i--) {
-            if ((i+1) >= lives) {
+        for (int i = panel_IMG_hearts.length - 1; i >= 0; i--) {
+            if ((i + 1) > lives) {
                 panel_IMG_hearts[i].setVisibility(View.VISIBLE);
             } else {
                 panel_IMG_hearts[i].setVisibility(View.INVISIBLE);

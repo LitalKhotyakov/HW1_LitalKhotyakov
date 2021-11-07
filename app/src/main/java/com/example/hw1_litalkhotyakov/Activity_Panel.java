@@ -9,6 +9,7 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.Random;
 
@@ -149,10 +150,12 @@ public class Activity_Panel extends AppCompatActivity {
 
     private void checkCrashing() {
         if (values[planeLoc][4] == 1) {
+            Toast.makeText(this, "You crashed", Toast.LENGTH_SHORT).show();
             vibrate();
             lives--;
             updateLivesViews();
         }
+
         if (lives == 0) {
             finish();
         }
@@ -177,9 +180,9 @@ public class Activity_Panel extends AppCompatActivity {
     private void updateLivesViews() {
         for (int i = panel_IMG_hearts.length - 1; i >= 0; i--) {
             if ((i + 1) > lives) {
-                panel_IMG_hearts[i].setVisibility(View.VISIBLE);
-            } else {
                 panel_IMG_hearts[i].setVisibility(View.INVISIBLE);
+            } else {
+                panel_IMG_hearts[i].setVisibility(View.VISIBLE);
             }
         }
     }

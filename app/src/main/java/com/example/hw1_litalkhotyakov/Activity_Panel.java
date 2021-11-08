@@ -3,6 +3,7 @@ package com.example.hw1_litalkhotyakov;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
@@ -11,23 +12,26 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
+
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Activity_Panel extends AppCompatActivity {
 
     private ImageView[] panel_IMG_planes;
-    private ImageView panel_IMG_background;
     private ImageView[] panel_IMG_hearts;
     private ImageView panel_IMG_left_direction;
     private ImageView panel_IMG_right_direction;
     private ImageView[][] path;
     private int[][] values;
+    private Timer timer = new Timer();
     private int planeLoc = 1;
     private final int MAX_LIVES = 3;
     private int lives = MAX_LIVES;
-    ;
-
-//    android:background="@drawable/img_background"
+    private Boolean isRuning = false;
 
 
     @Override
@@ -35,29 +39,48 @@ public class Activity_Panel extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_panel);
         findViews();
-
-//        Glide                  \\\\הוא אמר לעשות ככה אבל לא מראה לי תמונה מלאה\\\\
-//                .with(this)
-//                .load(R.drawable.img_background)
-//                .fitCenter()
-//                .into(panel_IMG_background);
-//
-//        <ImageView
-//        android:id="@+id/panel_IMG_background"
-//        android:layout_width="match_parent"
-//        android:layout_height="match_parent"
-//                />
-
         initValMatrix();
         checkCrashing();
         randomly();
         clickDirection();
         updateUI();
-
-
     }
 
-    private void MoveBombsAtTouchButton() {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        startTimer();
+    }
+
+    private void startTimer() {
+        isRuning = true;
+        timer = new Timer();
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                MoveBombs();
+                randomly();
+                if (isRuning) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateUI();
+                            updateLivesViews();
+                            checkCrashing();
+                        }
+                    });
+                }
+            }
+        }, 0, 1000);
+    }
+
+    private void stopTimer() {
+        isRuning = false;
+        timer.cancel();
+    }
+
+
+    private void MoveBombs() {
         for (int i = 0; i < values.length; i++) {
             for (int j = 0; j < values[i].length; j++) {
                 if (values[i][j] == 1) {
@@ -84,8 +107,6 @@ public class Activity_Panel extends AppCompatActivity {
                     planeLoc = 0;
                 }
                 panel_IMG_planes[planeLoc].setVisibility(View.VISIBLE);
-
-
             }
         });
 
@@ -98,16 +119,8 @@ public class Activity_Panel extends AppCompatActivity {
                     planeLoc = 2;
                 }
                 panel_IMG_planes[planeLoc].setVisibility(View.VISIBLE);
-                MoveBombsAtTouchButton();
-                updateUI();
-                randomly();
-                updateLivesViews();
-                checkCrashing();
-
             }
         });
-
-
     }
 
     private void initValMatrix() {
@@ -137,15 +150,11 @@ public class Activity_Panel extends AppCompatActivity {
                 {findViewById(R.id.panel_IMG_bombC0), findViewById(R.id.panel_IMG_bombC1), findViewById(R.id.panel_IMG_bombC2), findViewById(R.id.panel_IMG_bombC3), findViewById(R.id.panel_IMG_bombC4)}
         };
         values = new int[path.length][path[0].length];
-//        panel_IMG_background = findViewById(R.id.panel_IMG_background);
-
     }
 
     private void randomly() {
         final int random = new Random().nextInt(3);
         values[random][0] = 1;
-
-
     }
 
     private void checkCrashing() {
@@ -153,14 +162,14 @@ public class Activity_Panel extends AppCompatActivity {
             Toast.makeText(this, "You crashed", Toast.LENGTH_SHORT).show();
             vibrate();
             lives--;
-            updateLivesViews();
         }
 
         if (lives == 0) {
+            stopTimer();
+            startActivity(new Intent(this, EndGameActivity.class));
             finish();
         }
     }
-
 
     private void updateUI() {
         for (int i = 0; i < path.length; i++) {
@@ -196,5 +205,11 @@ public class Activity_Panel extends AppCompatActivity {
             //deprecated in API 26
             v.vibrate(500);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopTimer();
     }
 }

@@ -3,8 +3,7 @@
     package="com.example.hw1_litalkhotyakov">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
-
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -13,6 +12,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HW1_LitalKhotyakov">
+        <activity
+            android:name=".EndGameActivity"
+            android:exported="false"
+            android:label="@string/title_activity_end_game"
+            android:theme="@style/Theme.HW1_LitalKhotyakov.NoActionBar" />
         <activity
             android:name=".Activity_Panel"
             android:exported="true">
